@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="English 🇲🇹">
+<title>Daily English Practice</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0d14;--card:#1c1c28;--border:#2a2a3a;--surface:#16161f;--accent:#f0c040;--red:#e05a5a;--green:#5ae0b0;--text:#f0f0f5;--muted:#888899}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 16px 80px;max-width:520px;margin:0 auto}
+h1{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800}
+.sub{color:var(--muted);font-size:.8rem;margin-top:4px}
+header{width:100%;text-align:center;margin-bottom:20px}
+.flag{font-size:1.8rem;margin-bottom:4px}
+
+/* TABS */
+.tabs{width:100%;display:flex;gap:8px;margin-bottom:16px}
+.tab{flex:1;padding:10px 4px;background:var(–card);border:1.5px solid var(–border);border-radius:10px;color:var(–muted);font-family:‘Syne’,sans-serif;font-size:.72rem;font-weight:700;cursor:pointer;text-align:center;transition:.2s}
+.tab.on{border-color:var(–accent);color:var(–accent);background:rgba(240,192,64,.08)}
+
+/* SCREENS */
+.scr{width:100%;display:none;flex-direction:column;gap:10px}
+.scr.on{display:flex}
+
+/* TOPIC CARDS */
+.tc{background:var(–card);border:1.5px solid var(–border);border-radius:14px;padding:14px 16px;cursor:pointer;transition:.2s;display:flex;justify-content:space-between;align-items:center}
+.tc:active{transform:scale(.98)}
+.tc-info .icon{font-size:1.1rem;margin-bottom:2px}
+.tc-info .ttl{font-family:‘Syne’,sans-serif;font-size:.88rem;font-weight:700}
+.tc-info .dsc{font-size:.74rem;color:var(–muted);margin-top:2px}
+.badge{font-size:.66rem;padding:3px 9px;border-radius:99px;font-weight:600;white-space:nowrap;background:rgba(240,192,64,.12);color:var(–accent);border:1px solid rgba(240,192,64,.3)}
+.badge.done{background:rgba(90,224,176,.15);color:var(–green);border-color:rgba(90,224,176,.3)}
+.mix{width:100%;padding:14px;background:var(–accent);color:#111;font-family:‘Syne’,sans-serif;font-weight:700;font-size:.9rem;border:none;border-radius:14px;cursor:pointer}
+
+/* PROGRESS */
+.prog-wrap{width:100%;display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.prog-bar{flex:1;height:6px;background:var(–border);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;background:var(–accent);border-radius:99px;transition:width .4s}
+.prog-lbl{font-size:.74rem;color:var(–muted);white-space:nowrap}
+.tbadge{display:inline-block;background:var(–red);color:#fff;font-family:‘Syne’,sans-serif;font-size:.64rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:99px;margin-bottom:8px}
+
+/* QUESTION CARD */
+.qcard{width:100%;background:var(–card);border:1px solid var(–border);border-radius:14px;padding:18px 16px;margin-bottom:8px}
+.qnum{font-size:.66rem;color:var(–accent);font-family:‘Syne’,sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.qtxt{font-size:1rem;font-weight:500;line-height:1.5;margin-bottom:14px}
+.hint{font-size:.75rem;color:var(–muted);font-style:italic;margin-bottom:12px;padding:7px 10px;background:var(–surface);border-left:3px solid var(–accent);border-radius:6px}
+.opt{width:100%;background:var(–surface);border:1.5px solid var(–border);color:var(–text);padding:11px 13px;border-radius:10px;font-family:‘DM Sans’,sans-serif;font-size:.88rem;cursor:pointer;text-align:left;margin-bottom:8px;transition:.2s}
+.opt:active{transform:scale(.98)}
+.opt.ok{border-color:var(–green);background:rgba(90,224,176,.12);color:var(–green)}
+.opt.bad{border-color:var(–red);background:rgba(224,90,90,.12);color:var(–red)}
+.fb{margin-top:12px;padding:11px 13px;border-radius:10px;font-size:.83rem;line-height:1.55;display:none}
+.fb.ok{display:block;background:rgba(90,224,176,.1);border:1px solid var(–green);color:var(–green)}
+.fb.bad{display:block;background:rgba(224,90,90,.1);border:1px solid var(–red);color:#f09090}
+.nbtn{width:100%;padding:14px;background:var(–accent);color:#111;font-family:‘Syne’,sans-serif;font-weight:700;font-size:.9rem;border:none;border-radius:14px;cursor:pointer;display:none;margin-bottom:8px}
+.nbtn.on{display:block}
+
+/* RESULT */
+.ring{width:90px;height:90px;border-radius:50%;border:5px solid var(–accent);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:4px auto 10px}
+.ring .big{font-family:‘Syne’,sans-serif;font-size:1.8rem;font-weight:800}
+.ring .sml{font-size:.64rem;color:var(–muted)}
+.rmsg{font-size:.95rem;font-weight:500;text-align:center;margin-bottom:4px}
+.missed{background:var(–card);border:1px solid var(–border);border-radius:14px;padding:13px;width:100%}
+.missed h3{font-family:‘Syne’,sans-serif;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(–red);margin-bottom:10px}
+.mi{margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(–border);font-size:.82rem}
+.mi:last-child{border-bottom:none;margin-bottom:0}
+.mi .mq{color:var(–muted);margin-bottom:2px}
+.mi .ma{color:var(–green);font-weight:500}
+.rbtns{display:flex;gap:10px;width:100%}
+.rbtns button{flex:1;padding:13px;font-family:‘Syne’,sans-serif;font-weight:700;font-size:.84rem;border-radius:14px;cursor:pointer}
+.bsec{background:var(–card);color:var(–text);border:1.5px solid var(–border)}
+.bpri{background:var(–accent);color:#111;border:none}
+
+/* RANKING */
+.rcard{width:100%;background:var(–card);border:1px solid var(–border);border-radius:14px;padding:13px 15px}
+.stitle{font-family:‘Syne’,sans-serif;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(–muted);margin-bottom:10px}
+.days{display:flex;gap:5px}
+.day{flex:1;aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;background:var(–surface);border:1.5px solid var(–border);font-size:.6rem;color:var(–muted)}
+.day.done{background:rgba(90,224,176,.15);border-color:var(–green);color:var(–green)}
+.day.today{border-color:var(–accent)}
+.day b{font-size:.66rem}
+.cbars{display:flex;gap:4px;align-items:flex-end;height:64px}
+.cbar-w{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%;justify-content:flex-end}
+.cbar{width:100%;background:var(–accent);border-radius:3px 3px 0 0;min-height:2px}
+.cbar.e{background:var(–border)}
+.clbl{font-size:.54rem;color:var(–muted)}
+.hi{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(–border);font-size:.82rem}
+.hi:last-child{border-bottom:none}
+.hi-bar{flex:1;margin:0 10px;height:4px;background:var(–border);border-radius:99px;overflow:hidden}
+.hi-fill{height:100%;background:var(–accent);border-radius:99px}
+.empty{text-align:center;padding:28px 0}
+.empty .ei{font-size:2.2rem;margin-bottom:8px}
+.empty p{color:var(–muted);font-size:.83rem;line-height:1.6}
+</style>
+
+</head>
+<body>
+
+<header>
+  <div class="flag">🇧🇷 ✈️ 🇲🇹</div>
+  <h1>Daily English Practice</h1>
+  <p class="sub" id="dtlbl"></p>
+</header>
+
+<div class="tabs">
+  <div class="tab on" onclick="goTab('practice')">📚 Practice</div>
+  <div class="tab" onclick="goTab('ranking')">📊 Ranking</div>
+</div>
+
+<!-- PRACTICE -->
+
+<div class="scr on" id="tab-practice">
+
+  <!-- Topics -->
+
+  <div id="s-topics" style="display:flex;flex-direction:column;gap:10px;width:100%">
+    <div class="tc" onclick="start('alphabet')">
+      <div class="tc-info"><div class="icon">🔤</div><div class="ttl">Alphabet &amp; Pronunciation</div><div class="dsc">Letter sounds · spelling rules</div></div>
+      <span class="badge" id="st-alphabet">New</span>
+    </div>
+    <div class="tc" onclick="start('verb-to-be')">
+      <div class="tc-info"><div class="icon">⚡</div><div class="ttl">Verb TO BE</div><div class="dsc">Am / Is / Are · contractions</div></div>
+      <span class="badge" id="st-verb-to-be">New</span>
+    </div>
+    <div class="tc" onclick="start('present-continuous')">
+      <div class="tc-info"><div class="icon">🔄</div><div class="ttl">Present Continuous</div><div class="dsc">Verb + ING · right now</div></div>
+      <span class="badge" id="st-present-continuous">New</span>
+    </div>
+    <div class="tc" onclick="start('countries')">
+      <div class="tc-info"><div class="icon">🌍</div><div class="ttl">Countries &amp; Nationalities</div><div class="dsc">-ian, -an, -ish, -ese</div></div>
+      <span class="badge" id="st-countries">New</span>
+    </div>
+    <button class="mix" onclick="start('mix')">🎲 Mix All Topics</button>
+  </div>
+
+  <!-- Quiz -->
+
+  <div id="s-quiz" style="display:none;width:100%;flex-direction:column">
+    <div class="prog-wrap">
+      <div class="prog-bar"><div class="prog-fill" id="pfill" style="width:0%"></div></div>
+      <span class="prog-lbl" id="plbl">1/5</span>
+    </div>
+    <span class="tbadge" id="tbadge">Topic</span>
+    <div class="qcard">
+      <div class="qnum" id="qnum">QUESTION 1</div>
+      <div class="qtxt" id="qtxt"></div>
+      <div class="hint" id="qhint" style="display:none"></div>
+      <div id="opts"></div>
+      <div class="fb" id="fb"></div>
+    </div>
+    <button class="nbtn" id="nbtn" onclick="next()">Next →</button>
+  </div>
+
+  <!-- Result -->
+
+  <div id="s-result" style="display:none;width:100%;flex-direction:column;align-items:center;gap:12px">
+    <div class="ring"><span class="big" id="rscore">0/5</span><span class="sml">correct</span></div>
+    <div class="rmsg" id="rmsg"></div>
+    <div class="missed" id="missed-wrap" style="display:none">
+      <h3>📌 Review these</h3>
+      <div id="missed-items"></div>
+    </div>
+    <div class="rbtns">
+      <button class="bsec" onclick="goTopics()">← Topics</button>
+      <button class="bpri" onclick="goTab('ranking')">📊 Ranking</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- RANKING -->
+
+<div class="scr" id="tab-ranking">
+  <div class="empty" id="r-empty" style="display:none">
+    <div class="ei">📊</div>
+    <p><strong style="color:#f0f0f5">No data yet!</strong><br>Complete your first session<br>to see your ranking here.</p>
+  </div>
+  <div id="r-content" style="display:none;width:100%;flex-direction:column;gap:11px">
+    <div class="rcard" style="display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem">Your Progress</div><div style="font-size:.74rem;color:var(--muted);margin-top:2px" id="r-sub">0 sessions</div></div>
+      <div style="text-align:right"><div style="font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;color:var(--accent)" id="r-avg">—</div><div style="font-size:.66rem;color:var(--muted)">avg score</div></div>
+    </div>
+    <div class="rcard"><div class="stitle">🔥 Last 7 days</div><div class="days" id="r-days"></div></div>
+    <div class="rcard"><div class="stitle">📈 Score evolution</div><div class="cbars" id="r-chart"></div></div>
+    <div class="rcard"><div class="stitle">📋 Session history</div><div id="r-hist"></div></div>
+  </div>
+</div>
+
+<script>
+// ── DB ─────────────────────────────────────────
+const KEY='ep_v4';
+function ldb(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):{sessions:[],used:{}}}catch{return{sessions:[],used:{}}}}
+function sdb(d){try{localStorage.setItem(KEY,JSON.stringify(d))}catch{}}
+let db=ldb();
+function today(){return new Date().toISOString().slice(0,10)}
+function fmt(s){return new Date(s+'T12:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}
+
+// ── BANK ───────────────────────────────────────
+const B={
+  alphabet:[
+    {q:'How do you pronounce the letter "A" in English?',h:'consant + vowel = letters',o:['(ei)','(ai)','(âr)','(bi)'],a:0,e:'A = (ei). Example: name, date, cake.'},
+    {q:'What sound does "E" make when you say its name?',h:'It sounds like a vowel alone.',o:['(êi)','(i)','(ou)','(iu)'],a:1,e:'E = (i). Think of "be", "she", "he".'},
+    {q:'When "EE" appear together, what sound do they make?',h:'EA and EE share the same sound.',o:['(ou)','(i)','(âr)','(êu)'],a:1,e:'EE = (i). Examples: "meet", "feet", "tree".'},
+    {q:'The letters G+E or G+I produce which sound?',h:'Think of the word "gym".',o:['G hard','Dh','TCH','K'],a:1,e:'G+E / G+I = DH. Examples: "gentle", "giant".'},
+    {q:'When "E" appears at the end of a word, how is it pronounced?',h:'Example: "make", "name", "write".',o:['Pronounced (i)','Pronounced (ei)','Silent – not pronounced','Pronounced (ê)'],a:2,e:'Final "E" is silent. It changes the vowel before it.'},
+    {q:'Which question asks someone to say letters one by one?',o:['HOW DO YOU SAY?','CAN YOU SPELL? / HOW DO YOU SPELL?','WHAT IS YOUR NAME?','WHERE ARE YOU FROM?'],a:1,e:'"Can you spell?" and "How do you spell?" are correct.'},
+    {q:'The letter "H" has which sound in English?',h:'It is a very soft sound.',o:['Silent always','R suave (soft H)','TCH sound','K sound'],a:1,e:'H = R suave. Example: "hello", "happy".'},
+    {q:'CH in English can produce which sounds?',o:['Only TCH','Only K','TCH or K (chair / school)','SH'],a:2,e:'CH = TCH (chair) or K (school, character).'},
+    {q:'How is W pronounced when before R?',h:'"write", "wrong".',o:['Both pronounced','W is silent','R is silent','Both silent'],a:1,e:'W+R → W is silent. "Write" sounds like "rite".'},
+    {q:'What is the pronunciation of the letter "I" (its name)?',o:['(i)','(ai)','(iu)','(êi)'],a:1,e:'I = (ai). Think: "I am", "I like".'},
+    {q:'The letters OO together produce which sound?',h:'Think of "food" or "moon".',o:['(o)','(u)','(ou)','(iu)'],a:1,e:'OO = U. "food", "moon", "cool".'},
+    {q:'What does OU sound like in English?',h:'Think of "out" or "cloud".',o:['(o)','(u)','(au)','(iu)'],a:2,e:'OU = AU. "out", "cloud", "house".'},
+  ],
+  'verb-to-be':[
+    {q:'Which is the correct contraction of "I AM"?',o:["I'M","I'S","IM","I'RE"],a:0,e:"I AM → I'M. Example: I'm a student."},
+    {q:'Complete: "She ___ happy." (affirmative)',h:'She = singular.',o:['am','are','is','be'],a:2,e:"SHE IS happy → She's happy."},
+    {q:'What is the INTERROGATIVE structure of Verb To Be?',o:['PRONOUN + VERB TO BE + COMPLEMENT','VERB TO BE + PRONOUN + COMPLEMENT','COMPLEMENT + VERB TO BE + PRONOUN','NOT + PRONOUN + VERB TO BE'],a:1,e:'Interrogative: VERB TO BE + PRONOUN + COMPLEMENT. Example: Is she happy?'},
+    {q:'"They are NOT students" – correct contraction:',o:["They isn't students.","They aren't students.","They not are students.","They amn't students."],a:1,e:"ARE + NOT = AREN'T → They aren't students."},
+    {q:'"We ___ actors." – Choose the correct form.',o:['am','is','are','be'],a:2,e:"WE ARE. → We're actors."},
+    {q:'Which sentence correctly expresses AGE?',o:['I have 25 years.','I am 25 years old.','I is 25.','I are 25 years.'],a:1,e:'In English use TO BE for age: "I am 25 years old."'},
+    {q:'What does "IS + NOT" contract to?',o:["AMNT","AREN'T","ISN'T","NOT IS"],a:2,e:"IS + NOT = ISN'T. Example: He isn't a doctor."},
+    {q:'Complete: "___ you a teacher?" (interrogative)',o:['Am','Is','Are','Be'],a:2,e:"ARE you a teacher? → Yes, I am. / No, I'm not."},
+    {q:'Which correctly uses Verb To Be for LOCATION?',o:['I have in Brazil.','I am in Brazil.','I is at Brazil.','I be in Brazil.'],a:1,e:'"I am in Brazil." Location = TO BE + in/at/on.'},
+    {q:'Negative contraction of "SHE IS":',o:["She amn't","She isn't / She's not","She aren't","She not is"],a:1,e:"She isn't OR She's not – both correct."},
+    {q:'Verb To Be for OCCUPATION – which is correct?',o:['He have a doctor.','He is doctor.','He is a doctor.','He are a doctor.'],a:2,e:'"He is a doctor." – use A/AN before professions.'},
+    {q:'Complete: "Carlos ___ on the bus right now."',o:['am','is','are','be'],a:1,e:"HE IS on the bus. Location + To Be = IS."},
+  ],
+  'present-continuous':[
+    {q:'What is the structure of the Present Continuous?',o:['VERB + S','TO BE + MAIN VERB + ING','MAIN VERB + ING only','DID + VERB'],a:1,e:'Present Continuous = TO BE + MAIN VERB + ING.'},
+    {q:'When do we use Present Continuous?',o:['For habits','For past actions','For actions happening RIGHT NOW','For permanent facts'],a:2,e:'Present Continuous = actions happening AT THIS MOMENT.'},
+    {q:'How do you form the ING of "WRITE"?',h:'Verb ends in "E".',o:['Writeing','Writting','Writing','Writinge'],a:2,e:'Verbs ending in "E": remove E, add ING. Write → Writing.'},
+    {q:'What is the ING form of "RUN"?',h:'Ends in CVC.',o:['Runing','Running','Runeing','Runs'],a:1,e:'CVC rule: double the last consonant + ING. Run → Running.'},
+    {q:'Which sentence is in the Present Continuous?',o:['She works every day.','She worked yesterday.','She is working right now.','She will work tomorrow.'],a:2,e:'"She is working right now." = TO BE + VERB + ING.'},
+    {q:'What is the ING of "LIE"?',h:'Verb ends in "IE".',o:['Lieing','Lies','Lying','Liing'],a:2,e:'IE → Y + ING. Lie → Lying.'},
+    {q:'Complete: "They ___ playing in the yard right now."',o:['am','is','are','be'],a:2,e:'THEY ARE playing → They are + verb + ING.'},
+    {q:'What is the ING of "SHOP"?',h:'Ends in CVC: S-H-O-P.',o:['Shoping','Shops','Shopping','Shopeing'],a:2,e:'CVC rule: double the P → Shopping.'},
+    {q:'The verb "SEE" is an exception. Its ING form is:',h:'Normally "E" at the end is dropped.',o:['Seing','Sing','Seeing','Seying'],a:2,e:'EXCEPTION: See → Seeing. Also: Be → Being.'},
+    {q:'Complete: "I ___ traveling to Malta!"',o:["I'm","I is","I are","I be"],a:0,e:"I AM traveling = I'm traveling. Great for Malta!"},
+    {q:'What is the ING of "DANCE"?',h:'Verb ends in "E".',o:['Danceing','Dancing','Dansing','Danced'],a:1,e:'Dance ends in E → remove E + ING = Dancing.'},
+    {q:'Complete: "It ___ raining outside."',o:['am','is','are','be'],a:1,e:'IT IS raining. Weather uses IT IS.'},
+  ],
+  countries:[
+    {q:'Nationality of someone from BRAZIL?',o:['Brazilish','Brazilese','Brazilian','Brazilan'],a:2,e:'Brazil → Brazilian. Suffix: -ian.'},
+    {q:'Complete: "Where are you ___?" "I\'m from Spain."',o:['from','at','in','of'],a:0,e:'"Where are you FROM?" is the correct question.'},
+    {q:'Nationality of someone from ENGLAND?',o:['Englishman','Englandish','English','Englander'],a:2,e:'England → English. Suffix: -ish.'},
+    {q:'Which nationality suffix do JAPAN and CHINA use?',o:['-ian','-an','-ish','-ese'],a:3,e:'-ese: Japan → Japanese, China → Chinese.'},
+    {q:'Complete: "I\'m from Australia. I\'m ___."',o:['Australish','Australese','Australian','Australan'],a:2,e:'Australia → Australian. Suffix: -ian.'},
+    {q:"How do you ask someone's nationality?",o:['What country you are?','Are you from where?','Where are you from?','You from where?'],a:2,e:'"Where are you from?" is the standard question.'},
+    {q:'Nationality of someone from MEXICO?',o:['Mexicanish','Mexican','Mexicanese','Mexicanian'],a:1,e:'Mexico → Mexican. Suffix: -an.'},
+    {q:'Which is correct to introduce your nationality?',o:["I'm from Brazil. I'm Brazil.","I'm from Brazil. I'm Brazilian.","I am Brazil. I Brazilian.","I are from Brazil."],a:1,e:'Country = Brazil. Nationality = Brazilian (adjective).'},
+    {q:'"Are you from Brazil?" – correct negative answer:',o:["No, I'm not.","No, I amn't.","No, I isn't.","No, I aren't."],a:0,e:'"No, I\'m not." is correct for I AM questions.'},
+    {q:'Someone from PORTUGAL is called:',o:['Portugalan','Portugish','Portuganish','Portuguese'],a:3,e:'Portugal → Portuguese. Suffix: -ese.'},
+    {q:'Someone from TURKEY is called:',o:['Turkanian','Turkese','Turkish','Turkan'],a:2,e:'Turkey → Turkish. Suffix: -ish.'},
+    {q:'Nationality for CANADA?',o:['Canadish','Canadese','Canadian','Canadanese'],a:2,e:'Canada → Canadian. Suffix: -ian.'},
+  ]
+};
+const TL={alphabet:'🔤 Alphabet','verb-to-be':'⚡ Verb To Be','present-continuous':'🔄 Present Continuous',countries:'🌍 Countries',mix:'🎲 Mixed'};
+
+// ── STATE ───────────────────────────────────────
+let qs=[],cur=0,score=0,missed=[],answered=false,ctopic='';
+
+// ── INIT ────────────────────────────────────────
+const d=new Date();
+document.getElementById('dtlbl').textContent=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+updateBadges();
+
+// ── TABS ────────────────────────────────────────
+function goTab(t){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(s=>s.classList.remove('on'));
+  document.getElementById('tab-'+t).classList.add('on');
+  document.querySelectorAll('.tab')[t==='practice'?0:1].classList.add('on');
+  if(t==='ranking')renderRanking();
+}
+
+// ── BADGES ──────────────────────────────────────
+function updateBadges(){
+  const done=(db.sessions||[]).filter(s=>s.date===today()).map(s=>s.topic);
+  ['alphabet','verb-to-be','present-continuous','countries'].forEach(t=>{
+    const el=document.getElementById('st-'+t);
+    if(!el)return;
+    if(done.includes(t)){el.textContent='✓ Done';el.className='badge done';}
+    else{el.textContent='New';el.className='badge';}
+  });
+}
+
+// ── SHUFFLE & PICK ──────────────────────────────
+function shuf(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+
+function pick(topic){
+  const t=today();
+  if(!db.used)db.used={};
+  if(!db.used[t])db.used[t]={};
+  if(!db.used[t][topic])db.used[t][topic]=[];
+
+  if(topic==='mix'){
+    const all=Object.entries(B).flatMap(([tp,qs])=>qs.map((q,i)=>({...q,_t:tp,_i:i})));
+    const used=db.used[t]['mix']||[];
+    let av=all.filter(q=>!used.find(u=>u.t===q._t&&u.i===q._i));
+    if(av.length<5){db.used[t]['mix']=[];av=all;}
+    const ch=shuf(av).slice(0,5);
+    db.used[t]['mix']=[...(db.used[t]['mix']||[]),...ch.map(q=>({t:q._t,i:q._i}))];
+    sdb(db);return ch;
+  }
+  const pool=B[topic].map((q,i)=>({...q,_i:i}));
+  const used=db.used[t][topic];
+  let av=pool.filter(q=>!used.includes(q._i));
+  if(av.length<5){db.used[t][topic]=[];av=pool;}
+  const ch=shuf(av).slice(0,5);
+  db.used[t][topic]=[...db.used[t][topic],...ch.map(q=>q._i)];
+  sdb(db);return ch;
+}
+
+// ── START ───────────────────────────────────────
+function start(topic){
+  ctopic=topic;qs=pick(topic);cur=0;score=0;missed=[];
+  document.getElementById('tbadge').textContent=TL[topic]||topic;
+  show('quiz');renderQ();
+}
+
+function show(s){
+  ['topics','quiz','result'].forEach(n=>{
+    const el=document.getElementById('s-'+n);
+    if(el)el.style.display=n===s?(n==='topics'?'flex':'flex'):'none';
+  });
+}
+
+// ── RENDER Q ────────────────────────────────────
+function renderQ(){
+  answered=false;
+  const q=qs[cur],total=qs.length;
+  document.getElementById('pfill').style.width=(cur/total*100)+'%';
+  document.getElementById('plbl').textContent=(cur+1)+'/'+total;
+  document.getElementById('qnum').textContent='QUESTION '+(cur+1);
+  document.getElementById('qtxt').textContent=q.q;
+  const he=document.getElementById('qhint');
+  if(q.h){he.textContent='💡 '+q.h;he.style.display='block';}else he.style.display='none';
+  const oe=document.getElementById('opts');oe.innerHTML='';
+  q.o.forEach((opt,i)=>{
+    const b=document.createElement('button');b.className='opt';b.textContent=opt;
+    b.onclick=()=>pick2(i);oe.appendChild(b);
+  });
+  document.getElementById('fb').className='fb';
+  document.getElementById('nbtn').className='nbtn';
+}
+
+function pick2(idx){
+  if(answered)return;answered=true;
+  const q=qs[cur];
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const bs=document.querySelectorAll('.opt');
+  const fb=document.getElementById('fb');
+  if(idx===q.a){score++;bs[idx].className='opt ok';fb.className='fb ok';fb.textContent='✅ Correct! '+q.e;}
+  else{bs[idx].className='opt bad';bs[q.a].className='opt ok';fb.className='fb bad';fb.textContent='❌ Not quite. '+q.e;missed.push({q:q.q,a:q.o[q.a]});}
+  const nb=document.getElementById('nbtn');
+  nb.textContent=cur===qs.length-1?'See Results 🏁':'Next →';
+  nb.className='nbtn on';
+}
+
+function next(){
+  cur++;
+  if(cur>=qs.length)showResult();
+  else renderQ();
+}
+
+// ── RESULT ──────────────────────────────────────
+function showResult(){
+  document.getElementById('pfill').style.width='100%';
+  if(!db.sessions)db.sessions=[];
+  db.sessions.push({date:today(),topic:ctopic,score,total:qs.length,ts:Date.now()});
+  sdb(db);updateBadges();
+  document.getElementById('rscore').textContent=score+'/'+qs.length;
+  const pct=score/qs.length;
+  document.getElementById('rmsg').textContent=
+    pct===1?'🏆 Perfect score! Excellent work!':
+    pct>=.8?'🌟 Almost perfect! Great job!':
+    pct>=.6?'👍 Good job! Keep practicing daily!':
+    '📚 Keep going! Review and try again.';
+  const mw=document.getElementById('missed-wrap');
+  if(missed.length>0){
+    mw.style.display='block';
+    document.getElementById('missed-items').innerHTML=missed.map(m=>`<div class="mi"><div class="mq">${m.q}</div><div class="ma">✓ ${m.a}</div></div>`).join('');
+  }else mw.style.display='none';
+  show('result');
+}
+
+function goTopics(){show('topics');}
+
+// ── RANKING ─────────────────────────────────────
+function renderRanking(){
+  const ss=[...(db.sessions||[])].sort((a,b)=>a.ts-b.ts);
+  const re=document.getElementById('r-empty'),rc=document.getElementById('r-content');
+  if(ss.length===0){re.style.display='block';rc.style.display='none';return;}
+  re.style.display='none';rc.style.display='flex';rc.style.flexDirection='column';rc.style.gap='11px';
+
+  const avg=ss.reduce((s,x)=>s+(x.score/x.total),0)/ss.length;
+  document.getElementById('r-avg').textContent=Math.round(avg*100)+'%';
+  document.getElementById('r-sub').textContent=ss.length+' session'+(ss.length>1?'s':'')+' completed';
+
+  // 7 days
+  const now=new Date();now.setHours(12,0,0,0);
+  const days=Array.from({length:7},(_,i)=>{const d=new Date(now);d.setDate(now.getDate()-6+i);return d.toISOString().slice(0,10);});
+  const DN=['Su','Mo','Tu','We','Th','Fr','Sa'];
+  const dr=document.getElementById('r-days');dr.innerHTML='';
+  days.forEach(ds=>{
+    const d=new Date(ds+'T12:00:00'),isT=ds===today();
+    const dayS=ss.filter(s=>s.date===ds),done=dayS.length>0;
+    const best=done?Math.max(...dayS.map(s=>Math.round(s.score/s.total*100))):null;
+    const el=document.createElement('div');
+    el.className='day'+(done?' done':'')+(isT?' today':'');
+    el.innerHTML='<b>'+DN[d.getDay()]+'</b><span>'+(done?best+'%':'—')+'</span>';
+    dr.appendChild(el);
+  });
+
+  // chart
+  const l10=ss.slice(-10);
+  const cb=document.getElementById('r-chart');cb.innerHTML='';
+  l10.forEach(s=>{
+    const p=Math.round(s.score/s.total*100);
+    const w=document.createElement('div');w.className='cbar-w';
+    const b=document.createElement('div');b.className='cbar'+(p===0?' e':'');
+    b.style.height=Math.max(p,4)+'%';b.title=fmt(s.date)+': '+p+'%';
+    const l=document.createElement('div');l.className='clbl';l.textContent=p+'%';
+    w.appendChild(b);w.appendChild(l);cb.appendChild(w);
+  });
+
+  // history
+  const hi=document.getElementById('r-hist');hi.innerHTML='';
+  [...ss].reverse().slice(0,15).forEach((s,i)=>{
+    const p=Math.round(s.score/s.total*100);
+    const el=document.createElement('div');el.className='hi';
+    el.innerHTML='<div><div style="font-size:.82rem">'+TL[s.topic]+'</div><div style="font-size:.72rem;color:var(--muted)">'+fmt(s.date)+'</div></div><div class="hi-bar"><div class="hi-fill" style="width:'+p+'%"></div></div><div style="font-family:\'Syne\',sans-serif;font-weight:700;color:var(--accent);font-size:.85rem">'+p+'%</div>';
+    hi.appendChild(el);
+  });
+}
+</script>
+
+</body>
+</html>
